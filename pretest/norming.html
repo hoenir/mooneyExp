@@ -78,6 +78,7 @@
     }
     xhr.open('POST', 'https://www.psytests.be/tests/curimoon/curimoon.php');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    console.log(name, subject_id);
     xhr.send("filename=" + name + "&prolific_id=" + JSON.stringify(subject_id) + "&filedata=" + JSON.stringify(data));
   }
 
@@ -136,7 +137,7 @@
     dataAsArray: true,
     on_finish: function (data) {
       resp = JSON.parse(data.responses);
-      subjectid = resp[0].value;
+      subject_id = resp[0].value;
       session = resp[1].value;
       loadJSON('stimset.json', function (response) {
         createstimlists(response);
@@ -267,7 +268,7 @@
         test_part: 'aha'
       },
       on_finish: function () {
-        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (5 + (nb_stim_per_session *
+        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (2 + (nb_stim_per_session *
           6)));
       }
     };
@@ -311,7 +312,8 @@
         jsPsych.data.addProperties({
           totalTime: jsPsych.totalTime()
         });
-        saveData('pretest' + subject_id + session + ".csv", jsPsych.data.get().csv());
+        fname = 'pretest' + subject_id + session + ".csv"
+        saveData(fname, jsPsych.data.get().csv());
       }
     });
   }
