@@ -79,6 +79,7 @@
     xhr.open('POST', 'https://www.psytests.be/tests/curimoon/curimoon.php');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     console.log(name, subject_id);
+    console.log(data);
     xhr.send("filename=" + name + "&prolific_id=" + JSON.stringify(subject_id) + "&filedata=" + JSON.stringify(data));
   }
 
