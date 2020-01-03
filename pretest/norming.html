@@ -78,8 +78,6 @@
     }
     xhr.open('POST', 'https://www.psytests.be/tests/curimoon/curimoon.php');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    console.log(name, subject_id);
-    console.log(data);
     xhr.send("filename=" + name + "&prolific_id=" + JSON.stringify(subject_id) + "&filedata=" + JSON.stringify(data));
   }
 
@@ -158,6 +156,7 @@
     // this adds a property called 'subject' to every trial
     jsPsych.data.addProperties({
       subject: subject_id,
+      session: session,
       experiment_name: experiment_name
     });
 
@@ -197,7 +196,7 @@
         "<div style='float: right; margin-left: 20px;'><img src='../img/018gs.jpg' height='250' width='250'></img>" +
         "</div>" +
         "<p>To be useful for future research, we need to select those images that people can generally not solve on their own. Therefore we'll show you the distorted image and ask you to indicate (yes or no) whether you already recognized what was in the image. This is not a competition, so please respond truthfully. We don't ask or check your answer, we just want to know whether you think you recognized it. All images depict objects from one of these broad level categories: animals, inanimate objects, plants, sports, vehicles, and food. Recognizing means knowing more than these broad labels for a given image. It means knowing at least the basic level category of the main object in the image, for example when you see a parrot in the image, 'parrot' will obviously be a correct answer but also correct is 'bird', but not 'animal' (the broad level category). For the example above, 'rose' would be correct or 'flower', but not 'plant'. When soccer players are depicted, you don't recognize the image when you just see 'humans', 'outdoors', or 'sports'. Note that complete certainty about your answer is not necessary, it's enough to have a good, definite guess on the object, to say 'yes, I recognized it'.</p>" +
-        "<p>One additional question will be asked after we've revealed the solution: You'll be asked to indicate how strong your <strong>aha-experience</strong> was. This describes the positive 'click' you sometimes experience, when the pieces of the 'puzzle' fall together and you suddenly have 'insight' in the image.</p><p>Press any key to start.</p></div>",
+        "<p>One additional question will be asked after we've revealed the solution: You'll be asked to indicate how strong your <strong>aha-experience</strong> was. This describes the positive 'click' you sometimes experience, when the pieces of the 'puzzle' fall together and you suddenly have 'insight' in the image. It describes how good you felt the 'fit' was between the distorted image and the solution.</p><p>Press any key to start.</p></div>",
       post_trial_gap: 0,
       data: {
         test_part: 'instructions'
@@ -313,7 +312,7 @@
         jsPsych.data.addProperties({
           totalTime: jsPsych.totalTime()
         });
-        fname = 'pretest' + subject_id + session + ".csv"
+        fname = 'curimoon.csv'
         saveData(fname, jsPsych.data.get().csv());
       }
     });
