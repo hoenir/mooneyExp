@@ -212,7 +212,9 @@
       stimulus: '<div style="font-size:60px;">+</div>',
       choices: jsPsych.NO_KEYS,
       trial_duration: 200,
-      data: {test_part: 'fixation'}
+      data: {
+        test_part: 'fixation'
+      }
     }
 
 
@@ -236,7 +238,7 @@
       data: jsPsych.timelineVariable('data'),
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true);
-        data.recognized = jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.key_press);
+        data.recognized = jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press);
         data.test_part = 'recognized'
       }
     };
@@ -271,9 +273,13 @@
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true);
         data.test_part = 'aha';
+        data.aha = jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press);
+        //console.log(data);
         jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (2 + (nb_stim_per_session *
           6)));
       }
+
+
     };
 
 
@@ -316,7 +322,6 @@
           totalTime: jsPsych.totalTime()
         });
         fname = 'curimoon.csv'
-        console.log(jsPsych.data.get().csv());
         saveData(fname, jsPsych.data.get().csv());
       }
     });
