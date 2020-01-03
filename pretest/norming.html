@@ -3,18 +3,18 @@
 
 <head>
   <title>My experiment</title>
-  <script src="jsPsych-6.0.3/jspsych.js"></script>
-  <script src="jsPsych-6.0.3/plugins/jspsych-html-keyboard-response.js"></script>
-  <script src="jsPsych-6.0.3/plugins/jspsych-html-slider-response.js"></script>
-  <script src="jsPsych-6.0.3/plugins/jspsych-image-keyboard-response.js"></script>
-  <script src="jsPsych-6.0.3/plugins/jspsych-html-button-response.js"></script>
-  <script src="jsPsych-6.0.3/plugins/jspsych-survey-html-form.js"></script>
-  <script src="jsPsych-6.0.3/plugins/jspsych-survey-likert.js"></script>
-  <script src="jsPsych-6.0.3/plugins/jspsych-fullscreen.js"></script>
-  <script src="jsPsych-6.0.3/plugins/jspsych-animate-transparency.js"></script>
-  <script src="jsPsych-6.0.3/plugins/jspsych-same-different-image.js"></script>
+  <script src="jsPsych/jspsych.js"></script>
+  <script src="jsPsych/plugins/jspsych-html-keyboard-response.js"></script>
+  <script src="jsPsych/plugins/jspsych-html-slider-response.js"></script>
+  <script src="jsPsych/plugins/jspsych-image-keyboard-response.js"></script>
+  <script src="jsPsych/plugins/jspsych-html-button-response.js"></script>
+  <script src="jsPsych/plugins/jspsych-survey-html-form.js"></script>
+  <script src="jsPsych/plugins/jspsych-survey-likert.js"></script>
+  <script src="jsPsych/plugins/jspsych-fullscreen.js"></script>
+  <script src="jsPsych/plugins/jspsych-animate-transparency.js"></script>
+  <script src="jsPsych/plugins/jspsych-same-different-image.js"></script>
   <script src="stimset.json" type="text/javascript" charset="utf-8"></script>
-  <link href="jsPsych-6.0.3/css/jspsych.css" rel="stylesheet" type="text/css">
+  <link href="jsPsych/css/jspsych.css" rel="stylesheet" type="text/css">
   </link>
 </head>
 
@@ -101,7 +101,7 @@
     stimlist = JSON.parse(response);
 
 
-    nb_stim_per_session = 20 //Math.round(stimlist.length/2)
+    nb_stim_per_session = 10 //Math.round(stimlist.length/2)
     stimlistA = stimlist.slice(0, nb_stim_per_session);
     stimlistB = stimlist.slice(nb_stim_per_session, stimlist.length);
 
@@ -172,7 +172,7 @@
         "<li><b>What you will do in this research</b>:  Stimuli (images) will be presented on the computer and you will be asked different questions about them.</li>" +
         "<li><b>Time required</b>: Participation will take max 60 minutes to complete.</li>" +
         "<li><b>Risks</b>:  There are no anticipated risks associated with participating in this study. The effects of participating should be comparable to those you would experience from viewing a computer monitor for 60 minutes and using a mouse or keyboard.</li>" +
-        "<li><b>Benefits</b>:  This study provides no benefits to you individually except for the monetary reward. The study provides important information about the nature of perception and learning.</li>" +
+        "<li><b>Benefits</b>:  This study provides no benefits to you individually. The study provides important information about the nature of perception and learning.</li>" +
         "<li><b>Confidentiality</b>:  Your participation in this study will remain confidential. No personally identifiable information will be associated with your data. Your de-identified data may be shared with other researchers and used in future projects.</li>" +
         "<li><b>Participation and withdrawal</b>:  Your participation in this study is completely voluntary and you may refuse to participate or you may choose to withdraw at any time without penalty.</li>" +
         "<li><b>How to contact the researchers</b>: If you have questions or concerns about your participation or payment, or want to request a summary of research findings, please contact Sander Van de Cruys (KU Leuven), at sander.vandecruys@kuleuven.be.</li></ul>" +
@@ -212,18 +212,19 @@
       stimulus: '<div style="font-size:60px;">+</div>',
       choices: jsPsych.NO_KEYS,
       trial_duration: 200,
-      data: {
-        test_part: 'fixation'
-      }
+      data: {test_part: 'fixation'}
     }
+
 
     var mooney1 = {
       type: 'image-keyboard-response',
       stimulus: jsPsych.timelineVariable('mooney'),
       choices: jsPsych.NO_KEYS,
       trial_duration: 3000,
-      data: {
-        test_part: 'mooney1'
+      data: jsPsych.timelineVariable('data'),
+      on_finish: function (data) {
+        data.currentStim = jsPsych.timelineVariable('mooney', true);
+        data.test_part = 'mooney1'
       }
     };
 
@@ -232,10 +233,12 @@
       stimulus: '<p></p>',
       choices: ['y', 'n'],
       prompt: "<p>Did you recognize this image, yes or no? <b>Press y or n</b>.</p>",
-      data: {
-        test_part: 'recognized'
-      },
       data: jsPsych.timelineVariable('data'),
+      on_finish: function (data) {
+        data.currentStim = jsPsych.timelineVariable('mooney', true);
+        data.recognized = jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.key_press);
+        data.test_part = 'recognized'
+      }
     };
 
 
@@ -262,12 +265,12 @@
     var ahabutton = {
       type: 'html-keyboard-response',
       stimulus: '<p>How strong was your <strong>aha-experience</strong>?</p>',
-      choices: ['1', '2', '3', '4', '5', '6','7'],
+      choices: ['1', '2', '3', '4', '5', '6', '7'],
       prompt: "<p>Use the numerical keys on the top of your keyboard to respond (no need to press shift/caps).</p> <p>1 = Practically absent</p><p>7 = Very intense</p>",
-      data: {
-        test_part: 'aha'
-      },
-      on_finish: function () {
+      data: jsPsych.timelineVariable('data'),
+      on_finish: function (data) {
+        data.currentStim = jsPsych.timelineVariable('mooney', true);
+        data.test_part = 'aha';
         jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (2 + (nb_stim_per_session *
           6)));
       }
@@ -313,6 +316,7 @@
           totalTime: jsPsych.totalTime()
         });
         fname = 'curimoon.csv'
+        console.log(jsPsych.data.get().csv());
         saveData(fname, jsPsych.data.get().csv());
       }
     });
