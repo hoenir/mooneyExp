@@ -73,7 +73,7 @@
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
         console.log(xhr.response);
-        //window.location = completionurl
+        window.location = completionurl
       }
     }
     xhr.open('POST', 'https://www.psytests.be/tests/curimoon/curimoon.php');
@@ -101,7 +101,7 @@
     stimlist = JSON.parse(response);
 
 
-    nb_stim_per_session = 10 //Math.round(stimlist.length/2)
+    nb_stim_per_session = Math.round(stimlist.length/2)
     stimlistA = stimlist.slice(0, nb_stim_per_session);
     stimlistB = stimlist.slice(nb_stim_per_session, stimlist.length);
 
