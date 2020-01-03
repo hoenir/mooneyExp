@@ -31,9 +31,9 @@
   var experiment_name = 'pretest'
   var subject_id = getParameterByName('PROLIFIC_PID');
   var session = "";
-  // how many stimuli per session?
-  var nb_stim_per_session = 20;
-  // prop of stimuli for phase 1
+  var nb_stim_per_session = 0// how many stimuli per session?
+  var saved = false // indicates whether first half has been saved already
+  var finished = false // indicates whether experiment is done
 
   var stimlist = [];
   var stimlistA = [];
@@ -73,7 +73,10 @@
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
         console.log(xhr.response);
-        window.location = completionurl
+        if (finished){
+          window.location = completionurl;
+        }
+        
       }
     }
     xhr.open('POST', 'https://www.psytests.be/tests/curimoon/curimoon.php');
@@ -157,7 +160,8 @@
     jsPsych.data.addProperties({
       subject: subject_id,
       session: session,
-      experiment_name: experiment_name
+      experiment_name: experiment_name,
+      complete: false
     });
 
     /* create timeline */
@@ -223,7 +227,6 @@
       stimulus: jsPsych.timelineVariable('mooney'),
       choices: jsPsych.NO_KEYS,
       trial_duration: 3000,
-      data: jsPsych.timelineVariable('data'),
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true);
         data.test_part = 'mooney1'
@@ -235,7 +238,6 @@
       stimulus: '<p></p>',
       choices: ['y', 'n'],
       prompt: "<p>Did you recognize this image, yes or no? <b>Press y or n</b>.</p>",
-      data: jsPsych.timelineVariable('data'),
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true);
         data.recognized = jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press);
@@ -269,7 +271,6 @@
       stimulus: '<p>How strong was your <strong>aha-experience</strong>?</p>',
       choices: ['1', '2', '3', '4', '5', '6', '7'],
       prompt: "<p>Use the numerical keys on the top of your keyboard to respond (no need to press shift/caps).</p> <p>1 = Practically absent</p><p>7 = Very intense</p>",
-      data: jsPsych.timelineVariable('data'),
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true);
         data.test_part = 'aha';
@@ -277,6 +278,13 @@
         //console.log(data);
         jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (2 + (nb_stim_per_session *
           6)));
+        if((jsPsych.data.get().last(1).select('trial_index').mean() > (nb_stim_per_session*6)/2) & (saved==false)){
+          saveData('curimoon.csv', jsPsych.data.get().csv());
+          jsPsych.data.addProperties({complete: true});
+          saved=true;
+          console.log('saved part 1');
+                    
+        } 
       }
 
 
@@ -321,6 +329,7 @@
         jsPsych.data.addProperties({
           totalTime: jsPsych.totalTime()
         });
+        finished = true
         fname = 'curimoon.csv'
         saveData(fname, jsPsych.data.get().csv());
       }
