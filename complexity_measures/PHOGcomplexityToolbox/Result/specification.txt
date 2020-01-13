@@ -1,0 +1,1 @@
+ method 67 	 section 2 	 bins 16 	 angle 360 	 levels 3 	based on G 	
