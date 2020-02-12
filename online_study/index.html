@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>My experiment</title>
+  <script src="jsPsych-6.0.3/jspsych.js"></script>
+  <script src="jsPsych-6.0.3/plugins/jspsych-html-keyboard-response.js"></script>
+  <script src="jsPsych-6.0.3/plugins/jspsych-html-slider-response.js"></script>
+  <script src="jsPsych-6.0.3/plugins/jspsych-image-keyboard-response.js"></script>
+  <script src="jsPsych-6.0.3/plugins/jspsych-html-button-response.js"></script>
+  <script src="jsPsych-6.0.3/plugins/jspsych-survey-text.js"></script>
+  <script src="jsPsych-6.0.3/plugins/jspsych-survey-likert.js"></script>
+  <script src="jsPsych-6.0.3/plugins/jspsych-fullscreen.js"></script>
+  <script src="jsPsych-6.0.3/plugins/jspsych-animate-transparency.js"></script>
+  <script src="jsPsych-6.0.3/plugins/jspsych-same-different-image.js"></script>
+  <script src="stimset.json" type="text/javascript" charset="utf-8"></script>
+  <link href="jsPsych-6.0.3/css/jspsych.css" rel="stylesheet" type="text/css">
+  </link>
+</head>
+
+<body>
+  <noscript>
+    <h1>Warning: Javascript seems to be disabled</h1>
+    <p>This website requires that Javascript be enabled on your browser.</p>
+    <p>Instructions for enabling Javascript in your browser can be found
+      <a href="http://support.google.com/bin/answer.py?hl=en&answer=23852">here</a>
+      <p>
+  </noscript>
+</body>
+<script>
+  var experiment_name = 'norming'
+  var subject_id = getParameterByName('PROLIFIC_PID');
+  // how many stimuli per participant?
+  var nb_stim_per_session = 10; // aim for 100?
+  // prop of stimuli for phase 1
+  var prop_stim_phase1 = .8; // 80 in phase one, 20 as catch trials for memory phase?
+  var nb_stim_phase1 = Math.round(prop_stim_phase1 * nb_stim_per_session);
+  // max images per cat
+  var maxcat = 3;
+
+
+  var stimlist = [];
+  var ph1_stimlist = []; //list of stims for phase 1
+  var completionurl = "bye.html";
+  var images = ["../img/018tt.jpg", "../img/018gs.jpg"] // the list of images to preload
+
+
+  // returns param value from url if name/key given
+  function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+      results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
+
+  function loadJSON(filename, callback) {
+
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', filename, true);
+    xobj.onreadystatechange = function () {
+      if (xobj.readyState == 4 && xobj.status == "200") {
+        // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+        callback(xobj.responseText);
+      }
+    };
+    xobj.send(null);
+  }
+
+
+  function saveData(name, data) {
+
+    var xhr = new XMLHttpRequest();
+    // Met deze code kan je de respons van de server bekijken in het console venster
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        console.log(xhr.response);
+        window.location = completionurl
+      }
+    }
+    xhr.open('POST', 'https://www.psytests.be/tests/curimoon/curimoon.php');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    console.log(subject_id);
+    xhr.send("filename=" + name + "&prolific_id=" + JSON.stringify(subject_id) + "&filedata=" + JSON.stringify(data));
+  }
+
+  /**
+   * Randomize array element order in-place.
+   * Using Durstenfeld shuffle algorithm.
+   */
+  function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+  }
+
+  loadJSON('stimset.json', function (response) {
+    createstimlists(response);
+    runExp();
+  });
+
+  function createstimlists(response) {
+
+    stimlist = JSON.parse(response);
+
+    // pick a random subset of images for the subject at the start of the experiment, make sure that not more than maxcat images per category
+    let catcount = 0;
+    let catlist = [];
+    do {
+      stimlist = jsPsych.randomization.sampleWithoutReplacement(stimlist, nb_stim_per_session);
+      for (i = 0; i < stimlist.length; i++) {
+        catlist.push(stimlist[i]['category']
+
+          var counts = {}; catlist.forEach(function (x) {
+            counts[x] = (counts[x] || 0) + 1;
+          }); counts = Object.values(counts) catcount = Math.max(...counts)
+        }
+
+      }
+      while (catcount > maxcat);
+
+
+      // set old/new variable for determining phase 
+      for (i = 0; i < stimlist.length; i++) {
+
+        if (i < nb_stim_phase1) {
+          stimlist[i]['data'] = {
+            old: 'y'
+          };
+        } else {
+          stimlist[i]['data'] = {
+            old: 'n'
+          };
+        }
+        images.push(stimlist[i]['mooney'])
+        images.push(stimlist[i]['solution'])
+
+      }
+
+      ph1_stimlist = stimlist.slice(0, nb_stim_phase1); //subset for phase 1
+    }
+
+
+    function runExp() {
+
+      // record extra info in the jsPsych data
+      // this adds a property called 'subject' to every trial
+      
+
+      /* create timeline */
+      var timeline = [];
+
+      /* define welcome message trial */
+      var welcome = {
+        type: "html-keyboard-response",
+        stimulus: "Welcome to the experiment. Press any key to begin.",
+        data: {
+          test_part: 'instructions'
+        }
+      };
+      timeline.push(welcome);
+
+      var consent = {
+        type: "html-button-response",
+        choices: ["I agree"],
+        stimulus: "<div style='word-wrap: break-word; width: 900px'><h3>Please consider this information carefully before deciding whether to participate in this research</h3>" +
+          "<ul style='text-align: left; font-size: .8em;'><li><b>Purpose of the research</b>: To examine how people process images.</li>" +
+          "<li><b>What you will do in this research</b>:  Stimuli (images) will be presented on the computer and you will be asked different questions about them.</li>" +
+          "<li><b>Time required</b>: Participation will take between 45 and 60 minutes to complete.</li>" +
+          "<li><b>Risks</b>:  There are no anticipated risks associated with participating in this study. The effects of participating should be comparable to those you would experience from viewing a computer monitor for 30 minutes and using a mouse or keyboard.</li>" +
+          "<li><b>Benefits</b>:  This study provides no benefits to you individually except for the monetary reward. The study provides important information about the nature of perception and learning.</li>" +
+          "<li><b>Confidentiality</b>:  Your participation in this study will remain confidential. No personally identifiable information will be associated with your data. Your de-identified data may be shared with other researchers and used in future projects.</li>" +
+          "<li><b>Participation and withdrawal</b>:  Your participation in this study is completely voluntary and you may refuse to participate or you may choose to withdraw at any time without penalty.</li>" +
+          "<li><b>How to contact the researchers</b>: If you have questions or concerns about your participation or payment, or want to request a summary of research findings, please contact Sander Van de Cruys (KU Leuven), at sander.vandecruys@kuleuven.be.</li></ul>" +
+          "<p>The nature and purpose of this research have been sufficiently explained and I agree to participate in this study.  I understand that I am free to withdraw at any time without incurring any penalty.</p>" +
+          "<p>Please consent by clicking the button below to continue. Otherwise, please exit the study at this time.</p></div>",
+        data: {
+          test_part: 'instructions'
+        }
+      };
+      timeline.push(consent);
+
+      var sona = {
+        type: 'survey-html-form',
+        html: '<h3>SONA info</h3><p><label for="sona">Please fill in your sona/ems id code if you want to get a credit for you participation:</label><input type="text" id="sona" name="sona" required size="10"><p>It is really important for us that you pay attention throughout the whole experiment. In return, you will get the credit and we can also inform you about the goals and results in a debriefing mail (through sona) afterwards</p><input type="radio" id="yes" name="debrief" value="yes" required><label for="yes">Yes, I would like that!</label><input type="radio" id="no" name="debrief" value="no"><label for="no">No, thanks!</label><p>You might have participated in other collective research (CO) of our research group. Do we have your permission to combine your (anonymized) data? <input type="radio" id="yes" name="datajoin" value="yes" required><label for="yes">Yes, no problem!</label><input type="radio" id="no" name="datajoin" value="no"><label for="no">No, I prefer not.</label></p>',
+        data: {
+          test_part: 'sona'
+        }
+        dataAsArray: true,
+        on_finish: function (data) {
+          resp = JSON.parse(data.responses);
+          subject_id = resp[0].value;
+          console.log(subject_id);
+        }
+      };
+      timeline.push(sona);
+
+
+      /* timeline.push({
+        type: 'fullscreen',
+        fullscreen_mode: true,
+        data: {
+          test_part: 'instructions'
+        }
+      }); */
+
+      /* define instructions trial */
+      var instructions1 = {
+        type: "html-keyboard-response",
+        stimulus: "<div style='word-wrap: break-word; width: 900px'><h3>Instructions</h3><p>This experiment will have 3 parts. In the first part you will see a series of distorted images like the one below on the left. As you can see in the righthand image, the distorted images are derived from actual photographs. In what follows, you will <strong>briefly</strong> be presented with <strong>only</strong> the distorted image.</p> <div style='float: left; margin-right: 20px;'><img src='img/018tt.jpg' height='250' width='250'></img></div><div style='float: right; margin-left: 20px;'><img src='img/018gs.jpg' height='250' width='250'></img></div><p>Subsequently you will be asked a few questions about the image. For example, we ask you to make a guess on what is in the image. Note that it is OK to name just the basic level category, for example when you see a parrot in the image, 'parrot' will obviously be a correct answer but also correct is 'bird'. However, 'animal' will <strong>not</strong> be counted as a correct response. For the example above, 'rose' would be correct or 'flower', but not 'plant'. When soccer players are depicted, 'soccer', 'football', 'soccer players' will be correct, but not 'humans', 'outdoors', or 'sports'. You do not need to describe the image in full, just name the main object in it in one or two words. All images depict objects from one of the following broad level categories: animals, inanimate objects, plants, sports, vehicles, and food. Recognizing means knowing more than these broad labels for a given image. We always encourage you to make a guess if you can.</p><p>Two additional questions will be asked: one question on how confident you are that you know the solution and one question on how curious you are about the solution.</p><p> Next, the solution will be revealed to you.<p> Finally, you'll be asked to indicate how strong your <strong>aha-experience</strong> was. This describes the positive feeling of the 'click' you sometimes experience, when the pieces of the 'puzzle' fall together and you suddenly have 'insight' in the image.<p>Note that there are no right or wrong answers. We are interested in what <strong>you</strong> see in the image and how <strong>you</strong> feel about it.</p><p>Press any key to start.</p></div>",
+        post_trial_gap: 0,
+        data: {
+          test_part: 'instructions'
+        }
+      };
+      timeline.push(instructions1);
+
+      /* phase 1 */
+
+      var fixation = {
+        type: 'html-keyboard-response',
+        stimulus: '<div style="font-size:60px;">+</div>',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 200,
+        data: {
+          test_part: 'fixation'
+        }
+      }
+
+      var mooney1 = {
+        type: 'image-keyboard-response',
+        stimulus: jsPsych.timelineVariable('mooney'),
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 3000,
+        data: {
+          test_part: 'mooney1'
+        }
+      };
+
+      post_mooney_questions = {
+        type: 'survey-likert',
+        questions: [{
+            prompt: "<p>How <strong>curious</strong> are you about the solution of this image?</p>",
+            labels: ['indifferent', '', '', '', '', '', '', '', 'Very curious'],
+            required: true
+          },
+          {
+            prompt: "<p>How confident are you that you know what is in the picture (choose 'no clue' if you can't guess)? You'll be asked to make your guess on the next screen</p>",
+            labels: ['I have no clue at all', '', '', '', '', '', '', '', 'I know with very high certainty'],
+            required: true
+          }
+        ],
+        data: {
+          test_part: 'post_mooney1_questions',
+          currentStim = jsPsych.timelineVariable('mooney', true)
+        }
+      };
+
+      var recognition = {
+        type: 'survey-text',
+        questions: [{
+          prompt: "Try to guess what was in the image. Use just <strong>one or two words</strong> (not more!) to describe it. If you really can't guess, just leave blank and click continue.",
+          rows: 1,
+          columns: 40
+        }],
+        data: {
+          test_part: 'recognition',
+          currentStim = jsPsych.timelineVariable('mooney', true)
+        }
+      };
+
+
+      var reveal = {
+        type: 'image-keyboard-response',
+        stimulus: jsPsych.timelineVariable('solution'),
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 2000,
+        data: {
+          test_part: 'mooney2'
+        }
+      };
+
+      var mooney2 = {
+        type: 'image-keyboard-response',
+        stimulus: jsPsych.timelineVariable('mooney'),
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 2000,
+        data: {
+          test_part: 'mooney2'
+        }
+      };
+
+
+      post_reveal_questions = {
+        type: 'survey-likert',
+        questions: [{
+          prompt: "<p>How strong was your <strong>aha-experience</strong> when seeing the solution?</p>",
+          labels: ['Practically absent', '', '', '', '', '', '', '', 'Very intense'],
+          required: true
+        }],
+        data: {
+          test_part: 'post_reveal_questions',
+          currentStim = jsPsych.timelineVariable('mooney', true)
+        },
+        on_finish: function () {
+          jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (5 + (
+            nb_stim_per_session *
+            7)));
+        }
+      };
+
+
+      var phase1_procedure = {
+        timeline: [fixation, mooney1, post_mooney_questions, recognition, reveal, mooney2, post_reveal_questions],
+        timeline_variables: ph1_stimlist,
+        repetitions: 1,
+        randomize_order: true
+      };
+
+      timeline.push(phase1_procedure);
+
+      /* phase 2 below */
+
+      var ph2_instruct = {
+        type: "html-keyboard-response",
+        stimulus: "<p>You completed the first phase of the experiment.</p><p>In the next phase you will again see a series of distorted images, some of which you have already encountered in the previous phase.</p><p>You will be asked to indicate whether the image was an old or a new one (one not seen in the previous phase) and subsequently to recognize what is depicted if you can.</p><p>Press any key to start the new phase</p>",
+        data: {
+          test_part: 'instructions'
+        }
+      };
+      timeline.push(ph2_instruct);
+
+
+
+      var ph2_fixation = {
+        type: 'html-keyboard-response',
+        stimulus: '<div style="font-size:60px;">+</div>',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 200,
+        data: {
+          test_part: 'fixation'
+        }
+      }
+
+
+      var ph2_mooney = {
+        type: 'image-keyboard-response',
+        stimulus: jsPsych.timelineVariable('mooney'),
+        choices: jsPsych.NO_KEYS,
+        trial_duration: 2000,
+        data: {
+          test_part: 'ph2_mooney'
+        }
+      };
+
+
+      var ph2_oldornew = {
+        type: 'html-keyboard-response',
+        stimulus: '<p></p>',
+        choices: ['y', 'n'],
+        prompt: "<p>Did you see this image before, yes or no? <b>Press y or n</b>.</p>",
+        data: {
+          test_part: 'familiar',
+          currentStim = jsPsych.timelineVariable('mooney', true)
+        },
+        data: jsPsych.timelineVariable('data'),
+        on_finish: function (data) {
+          data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.old);
+        }
+      };
+
+
+      var ph2_solved = {
+        type: 'survey-text',
+        questions: [{
+          prompt: 'Did you see what was actually depicted in the image? If so, use just <strong>one or two words</strong> (not more!) to describe it. If not, just leave blank and click continue. Note that it is ok to name just the basic level category, e.g. when you see a parrot in the image, "parrot" will obviously be a correct answer but also also "bird". However, "animal" will <strong>not</strong> be counted as a correct response. You do not need to describe the image in full, just name the main object in it.',
+          rows: 1,
+          columns: 40
+        }],
+        data: {
+          test_part: 'ph2_recognition',
+          currentStim = jsPsych.timelineVariable('mooney', true)
+        }
+      };
+
+
+      var phase2_procedure = {
+        timeline: [ph2_fixation, ph2_mooney, ph2_oldornew, ph2_solved],
+        timeline_variables: stimlist,
+        repetitions: 1,
+        randomize_order: true
+      }
+
+      timeline.push(phase2_procedure);
+
+      var qitems = {
+        1: "I view challenging situations as an opportunity to grow and learn.",
+        2: "I seek out situations where it is likely that I will have to think in depth about something.",
+        3: "I enjoy learning about subjects that are unfamiliar to me.",
+        4: "I find it fascinating to learn new information.",
+        5: "Thinking about solutions to difficult conceptual problems can keep me awake at night.",
+        6: "I can spend hours on a single problem because I just can't rest without knowing the answer.",
+        7: "I feel frustrated if I can't figure out the solution to a problem, so I work even harder to solve it.",
+        8: "I work relentlessly at problems that I feel must be solved.",
+        9: "The smallest doubt can stop me from seeking out new experiences.",
+        10: "I cannot handle the stress that comes from entering uncertain situations.",
+        11: "I find it hard to explore new places when I lack confidence in my abilities.",
+        12: "It is difficult to concentrate when there is a possibility that I will be taken by surprise.",
+        13: "I like finding out why people behave the way they do.",
+        14: "When other people are having a conversation, I like to find out what it's about.",
+        15: "When around other people, I like listening to their conversations.",
+        16: "When people quarrel, I like to know what's going on.",
+        17: "Risk-taking is exciting to me.",
+        18: "When I have free time, I want to do things that are a little scary.",
+        19: "Creating an adventure as I go is much more appealing than a planned adventure.",
+        20: "I prefer friends who are excitingly unpredictable.",
+        21: "I like exploring my surroundings.",
+        22: "When I smell something new, I try and find out what the odor is coming from.",
+        23: "I like to discover new places to go.",
+        24: "If I hear something rustling in the grass I have to see what it is.",
+        25: "I like visiting art galleries and art museums.",
+        26: "When I see a new fabric, I like to touch and feel it.",
+        27: "I like to listen to new and unusual kinds of music.",
+        28: "When I hear a musical instrument and I am not sure what it is, I like to see it.",
+        29: "I enjoy trying different kinds of ethnic foods.",
+        30: "When I hear a strange sound, I usually try to find out what caused it.",
+        31: "I don’t like situations that are uncertain.",
+        32: "I dislike questions which could be answered in many different ways.",
+        33: "I find that a well ordered life with regular hours suits my temperament.",
+        34: "I feel uncomfortable when I don’t understand the reason why an event occurred in my life.",
+        35: "I feel irritated when one person disagrees with what everyone else in a group believes.",
+        36: "I don’t like to go into a situation without knowing what I can expect from it.",
+        37: "When I have made a decision, I feel relieved.",
+        38: "When I am confronted with a problem, I’m dying to reach a solution very quickly.",
+        39: "I would quickly become impatient and irritated if I would not find a solution to a problem immediately.",
+        40: "I don’t like to be with people who are capable of unexpected actions.",
+        41: "I dislike it when a person’s statement could mean many different things.",
+        42: "I find that establishing a consistent routine enables me to enjoy life more.",
+        43: "I enjoy having a clear and structured mode of life.",
+        44: "I do not usually consult many different opinions before forming my own view.",
+        45: "I dislike unpredictable situations."
+      };
+
+      var order = Math.floor(Math.random() * (35 - 1 + 1)) + 1;
+
+      shuffleArray(order);
+      formattedqitems = []
+
+      for (let i = 0; i < order.length; i++) {
+        formattedqitems.push({
+          prompt: qitems[order[i]],
+          labels: ['Strongly disagree', 'Disagree', 'Slightly disagree',
+            'Slightly agree', 'Agree', 'Strongly agree'
+          ],
+          required: true
+        })
+      }
+
+
+      var curiosity_questionnaire = {
+        type: 'survey-likert',
+        preamble: "<h3>Questionnaire</h3><p>This is the last part of the experiment. Below are a number of statements that people use to describe themselves. Please use the scale below to indicate the degree to which these statements accurately describe you. There are no right or wrong answers. Do not spend too much time on any one statement but give the answer that seems to describe how you <strong>generally</strong> feel. The list is quite long, but it is important to us that you respond truthfully to all statements.</p>",
+        questions: formattedqitems,
+        data: {
+          test_part: 'curiosity_questionnaire',
+          item_order: order
+        }
+      };
+
+      timeline.push(curiosity_questionnaire);
+
+      /* define debrief */
+
+      var debrief = {
+        type: "html-keyboard-response",
+        trial_duration: 2000,
+        stimulus: "<h1>Thanks a lot for your time!</h1><p>You finished the complete experiment. Wait for the next screen to close the window...</p>"
+        data: {
+          test_part: 'instructions'
+        }
+      };
+      timeline.push(debrief);
+
+      /* start the experiment */
+      jsPsych.init({
+        timeline: timeline,
+        show_progress_bar: true,
+        auto_update_progress_bar: false,
+        preload_images: images,
+        exclusions: {
+          min_width: 800,
+          min_height: 700
+        },
+        on_finish: function () {
+          jsPsych.data.addProperties({
+            totalTime: jsPsych.totalTime()
+            subject: subject_id,
+            experiment_name: experiment_name
+          });
+          saveData("curimoon.csv", jsPsych.data.get().csv());
+        }
+      });
+    }
+</script>
+
+</html>
