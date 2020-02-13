@@ -79,7 +79,7 @@
     }
     xhr.open('POST', 'https://www.psytests.be/tests/curimoon/curimoon.php');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send("filename=" + name + "&prolific_id=" + "co" + subject_id + "&filedata=" + JSON.stringify(data));
+    xhr.send("filename=" + name + "&prolific_id=" + JSON.stringify(subject_id) + "&filedata=" + JSON.stringify(data));
   }
 
   /**
@@ -204,7 +204,7 @@
       dataAsArray: true,
       on_finish: function (data) {
         resp = JSON.parse(data.responses);
-        subject_id = resp[0].value;
+        subject_id = "co" + String(resp[0].value);
       }
     };
     timeline.push(sona);
