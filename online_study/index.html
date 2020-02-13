@@ -68,18 +68,18 @@
 
 
   function saveData(name, data) {
-    console.log(subject_id);
+    //console.log(data)
     var xhr = new XMLHttpRequest();
     // Met deze code kan je de respons van de server bekijken in het console venster
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
         console.log(xhr.response);
-        //window.location = completionurl
+        window.location = completionurl
       }
     }
     xhr.open('POST', 'https://www.psytests.be/tests/curimoon/curimoon.php');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send("filename=" + name + "&prolific_id=" + JSON.stringify(subject_id) + "&filedata=" + JSON.stringify(data));
+    xhr.send("filename=" + name + "&prolific_id=" + "co" + JSON.stringify(subject_id) + "&filedata=" + JSON.stringify(data));
   }
 
   /**
@@ -102,26 +102,28 @@
 
   function createstimlists(response) {
 
-    stimlist = JSON.parse(response);
+    allstims = JSON.parse(response);
 
     // pick a random subset of images for the subject at the start of the experiment, make sure that not more than maxcat images per category
-    let catcount = 0;
-    let catlist = [];
+    var catcount = 0;
+    
     do {
-      stimlist = jsPsych.randomization.sampleWithoutReplacement(stimlist, nb_stim_per_session);
-
+    
+      let catlist = [];
+      stimlist = jsPsych.randomization.sampleWithoutReplacement(allstims, nb_stim_per_session);
+      
       for (i = 0; i < stimlist.length; i++) {
         catlist.push(stimlist[i]['category']);
+      }
 
         var counts = {};
         catlist.forEach(function (x) {
           counts[x] = (counts[x] || 0) + 1;
         });
-        counts = Object.values(counts);
-        catcount = Math.max(...counts);
-      }
-
+        thiscounts = Object.values(counts);
+        catcount = Math.max(...thiscounts);
     }
+    
     while (catcount > maxcat);
 
 
@@ -158,7 +160,7 @@
     /* define welcome message trial */
     var welcome = {
       type: "html-keyboard-response",
-      stimulus: "Welcome to the experiment. Press any key to begin.",
+      stimulus: "Welcome to the experiment. This is an online experiment so please don't close the tab/window until we say goodbye.  Press any key to begin.",
       data: {
         test_part: 'instructions'
       }
@@ -185,9 +187,17 @@
     };
     timeline.push(consent);
 
+    timeline.push({
+      type: 'fullscreen',
+      fullscreen_mode: true,
+      data: {
+        test_part: 'instructions'
+      }
+    });
+
     var sona = {
       type: 'survey-html-form',
-      html: "<div style='word-wrap: break-word; width: 900px'><h3>SONA info</h3><p><label for='sona'>Please fill in your sona/ems id code if you want to get a credit for you participation: </label></p><p><input type='text' id='sona' name='sona' required size='10'></p><p>It is really important for us that you pay attention throughout the whole experiment. In return, you will get the credit and we can also inform you about the goals and results in a debriefing mail (through sona) afterwards:</p><p><input type='radio' id='yesdebrief' name='debrief' value='yes' required><label for='yesdebrief'>Yes, I would like that!</label></p><p><input type='radio' id='nodebrief' name='debrief' value='no'><label for='nodebrief'>No, thanks!</label></p><p>You might have participated in other collective research (CO) of our research group. Do we have your permission to combine your (anonymous) data? </p><p><input type='radio' id='yesdatajoin' name='datajoin' value='yes' required><label for='yesdatajoin'>Yes, no problem!</label></p><p><input type='radio' id='nodatajoin' name='datajoin' value='no'><label for='nodatajoin'>No, I prefer not.</label></p></div>",
+      html: "<div style='word-wrap: break-word; width: 900px'><h3>SONA info</h3><p><label for='sona'>Please fill in your sona/ems id code if you want to get a credit for you participation: </label></p><p><input type='text' id='sonaid' name='sonaid' required size='10'></p><p>It is really important for us that you pay attention throughout the whole experiment. In return, you will get the credit and we can also inform you about the goals and results in a debriefing mail (through sona) afterwards:</p><p><input type='radio' id='yesdebrief' name='debrief' value='yes' required><label for='yesdebrief'>Yes, I would like that!</label></p><p><input type='radio' id='nodebrief' name='debrief' value='no'><label for='nodebrief'>No, thanks!</label></p><p>You might have participated in other collective research (CO) of our research group. Do we have your permission to combine your (anonymous) data? </p><p><input type='radio' id='yesdatajoin' name='datajoin' value='yes' required><label for='yesdatajoin'>Yes, no problem!</label></p><p><input type='radio' id='nodatajoin' name='datajoin' value='no'><label for='nodatajoin'>No, I prefer not.</label></p></div>",
       data: {
         test_part: 'sona'
       },
@@ -199,19 +209,10 @@
     };
     timeline.push(sona);
 
-
-    timeline.push({
-      type: 'fullscreen',
-      fullscreen_mode: true,
-      data: {
-        test_part: 'instructions'
-      }
-    });
-
     /* define instructions trial */
     var instructions1 = {
       type: "html-keyboard-response",
-      stimulus: "<div style='word-wrap: break-word; width: 900px'><h3>Instructions</h3><p>This experiment will have 3 parts. In the first part you will see a series of distorted images like the one below on the left. As you can see in the righthand image, the distorted images are derived from actual photographs. In what follows, you will <strong>briefly</strong> be presented with <strong>only</strong> the distorted image.</p> <div style='float: left; margin-right: 20px;'><img src='../img/018tt.jpg' height='250' width='250'></img></div><div style='float: right; margin-left: 20px;'><img src='../img/018gs.jpg' height='250' width='250'></img></div><p>Subsequently you will be asked a few questions about the image. For example, we ask you to make a guess on what is in the image. Note that it is OK to name just the <strong>basic level category</strong>, for example when you see a parrot in the image, 'parrot' will obviously be a correct answer but also correct is 'bird'. However, 'animal' will <strong>not</strong> be counted as a correct response. For the example above, 'rose' would be correct or 'flower', but not 'plant'. When soccer players are depicted, 'soccer', 'football', 'soccer players' will be correct, but not 'humans', 'outdoors', or 'sports'. You do not need to describe the image in full, just name the main object in it <strong>in one or two words</strong>. All images depict objects from one of the following broad level categories: animals, inanimate objects, plants, sports, vehicles, and food. Recognizing means knowing <strong>more</strong> than these broad labels for a given image. But we always encourage you to <strong>make a guess</strong> if you can.</p><p>Two additional questions will be asked: one question on how <strong>curious</strong> you are about the solution and one on how <strong>confident</strong> you are that you know the solution.</p><p> Next, the solution will be revealed to you. Finally, you'll be asked to indicate how strong your <strong>aha-experience</strong> was after seeing the solution. This describes the positive feeling of the 'click' you sometimes experience, when the pieces of the 'puzzle' fall together and you suddenly have 'insight' in the image.<p>Note that there are no right or wrong answers. We are interested in what <strong>you</strong> see in the image and how <strong>you</strong> feel about it.</p><p>Press any key to start.</p></div>",
+      stimulus: "<div style='word-wrap: break-word; width: 900px'><h3>Instructions</h3><p>This experiment will have 3 parts. In the first part you will see a series of distorted images like the one below on the left. As you can see in the righthand image, the distorted images are derived from actual photographs. In what follows, you will <strong>briefly</strong> be presented with <strong>only</strong> the distorted image.</p> <div style='float: left; margin-right: 20px;'><img src='../img/018tt.jpg' height='250' width='250'></img></div><div style='float: right; margin-left: 20px;'><img src='../img/018gs.jpg' height='250' width='250'></img></div><p>Subsequently you will be asked a few questions about the image. For example, we ask you to make a guess on what is in the image. Note that it is OK to name just the <strong>basic level category</strong>, for example when you see a parrot in the image, 'parrot' will obviously be a correct answer but also correct is 'bird'. However, 'animal' will <strong>not</strong> be counted as a correct response. For the example above, 'rose' would be correct or 'flower', but not 'plant'. When soccer players are depicted, 'soccer', 'football', 'soccer players' will be correct, but not 'humans', 'outdoors', or 'sports'. You do not need to describe the image in full, just name the main object in it <strong>in one or two words</strong>. All images depict objects from one of the following broad level categories: animals, inanimate objects, plants, sports, vehicles, and food. Recognizing means knowing <strong>more</strong> than these broad labels for a given image. But we always encourage you to <strong>make a guess</strong> if you can. Note that you are allowed to use <strong>Dutch and English</strong> in your answers, whatever comes easiest for you.</p><p>Two additional questions will be asked: one question on how <strong>curious</strong> you are about the solution and one on how <strong>confident</strong> you are that you know the solution.</p><p> Next, the solution will be revealed to you. Finally, you'll be asked to indicate how strong your <strong>aha-experience</strong> was after seeing the solution. This describes the positive feeling of the 'click' you sometimes experience, when the pieces of the 'puzzle' fall together and you suddenly have 'insight' in the image.<p>Note that there are no right or wrong answers. We are interested in what <strong>you</strong> see in the image and how <strong>you</strong> feel about it.</p><p>Press any key to start.</p></div>",
       post_trial_gap: 0,
       data: {
         test_part: 'instructions'
@@ -259,7 +260,7 @@
       data: {
         test_part: 'post_mooney1_questions'
       },
-      scale_width: 200,
+      scale_width: 400,
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true)
       }
@@ -270,13 +271,15 @@
       questions: [{
         prompt: "<strong>Try to guess what was in the image.</strong> Use just <strong>one or two words</strong> (not more!) to describe it.<br>If you really can't guess, just leave blank and click continue.",
         rows: 1,
+        name: 'guess',
         columns: 40
       }],
       data: {
         test_part: 'recognition'
       },
+      dataAsArray: true,
       on_finish: function (data) {
-        data.currentStim = jsPsych.timelineVariable('mooney', true)
+        data.currentStim = jsPsych.timelineVariable('mooney', true);
       }
     };
 
@@ -287,7 +290,7 @@
       choices: jsPsych.NO_KEYS,
       trial_duration: 2000,
       data: {
-        test_part: 'mooney2'
+        test_part: 'reveal'
       }
     };
 
@@ -310,12 +313,14 @@
         name: 'aha',
         required: true
       }],
-      scale_width: 200,
+      scale_width: 400,
       data: {
         test_part: 'post_reveal_questions'
       },
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true)
+        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (8 + (nb_stim_per_session *
+          4) + (ph1_stimlist.length*7)));
       }
     };
 
@@ -369,13 +374,11 @@
       stimulus: '<p></p>',
       choices: ['y', 'n'],
       prompt: "<p>Did you see this image before, yes or no? <b>Press y or n</b>.</p>",
-      data: {
-        test_part: 'familiar'
-      },
       data: jsPsych.timelineVariable('data'),
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true);
         data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.old);
+        data.test_part = 'familiar';
       }
     };
 
@@ -385,13 +388,17 @@
       questions: [{
         prompt: "<strong>Try to recognize what was in the image.</strong> Use just <strong>one or two words</strong> (not more!) to describe it.<br>If you really don't know, just leave blank and click continue.",
         rows: 1,
+        name: 'recognition',
+        placeholder: "",
         columns: 40
       }],
       data: {
         test_part: 'ph2_recognition'
       },
       on_finish: function (data) {
-        data.currentStim = jsPsych.timelineVariable('mooney', true)
+        data.currentStim = jsPsych.timelineVariable('mooney', true);
+        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (8 + (nb_stim_per_session *
+          4) + (ph1_stimlist.length*7)));
       }
     };
 
@@ -461,20 +468,20 @@
         labels: ['Strongly disagree', 'Disagree', 'Slightly disagree',
           'Slightly agree', 'Agree', 'Strongly agree'
         ],
-        name: i.toString(),
+        name: i,
         required: true
       });
     }
 
-    // randomize presentation
-    shuffleArray(items);
+
+    //items = items.slice(0, 10) //for testing
 
     var curiosity_questionnaire = {
       type: 'survey-likert',
       preamble: "<div style='word-wrap: break-word; width: 800px'><h3>Part 3: Questionnaire</h3><p>This is the last part of the experiment. Below are a number of statements that people use to describe themselves. Please use the scale below to indicate the degree to which these statements accurately describe you. There are no right or wrong answers. Do not spend too much time on any one statement but give the answer that seems to describe how you <strong>generally</strong> feel. The list is quite long, but it is important to us that you respond truthfully to all statements.</p></div>",
       questions: items,
       randomize_question_order: true,
-      scale_width: 200,
+      scale_width: 400,
       button_label: 'Submit',
       data: {
         test_part: 'curiosity_questionnaire',
