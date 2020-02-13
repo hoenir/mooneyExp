@@ -30,7 +30,7 @@
   var experiment_name = 'norming'
   var subject_id = getParameterByName('PROLIFIC_PID');
   // how many stimuli per participant?
-  var nb_stim_per_session = 10; // aim for 100?
+  var nb_stim_per_session = 20; // aim for 100?
   // prop of stimuli for phase 1
   var prop_stim_phase1 = .8; // 80 in phase one, 20 as catch trials for memory phase?
   var nb_stim_phase1 = Math.round(prop_stim_phase1 * nb_stim_per_session);
@@ -41,7 +41,7 @@
   var stimlist = [];
   var ph1_stimlist = []; //list of stims for phase 1
   var completionurl = "bye.html";
-  var images = ["../img/018tt.jpg", "../img/018gs.jpg"] // the list of images to preload
+  var images = ["../img/018tt.jpg", "../img/018gs.jpg", "aha.jpg"] // the list of images to preload
 
 
   // returns param value from url if name/key given
@@ -79,7 +79,7 @@
     }
     xhr.open('POST', 'https://www.psytests.be/tests/curimoon/curimoon.php');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send("filename=" + name + "&prolific_id=" + "co" + JSON.stringify(subject_id) + "&filedata=" + JSON.stringify(data));
+    xhr.send("filename=" + name + "&prolific_id=" + "co" + subject_id + "&filedata=" + JSON.stringify(data));
   }
 
   /**
@@ -212,13 +212,24 @@
     /* define instructions trial */
     var instructions1 = {
       type: "html-keyboard-response",
-      stimulus: "<div style='word-wrap: break-word; width: 900px'><h3>Instructions</h3><p>This experiment will have 3 parts. In the first part you will see a series of distorted images like the one below on the left. As you can see in the righthand image, the distorted images are derived from actual photographs. In what follows, you will <strong>briefly</strong> be presented with <strong>only</strong> the distorted image.</p> <div style='float: left; margin-right: 20px;'><img src='../img/018tt.jpg' height='250' width='250'></img></div><div style='float: right; margin-left: 20px;'><img src='../img/018gs.jpg' height='250' width='250'></img></div><p>Subsequently you will be asked a few questions about the image. For example, we ask you to make a guess on what is in the image. Note that it is OK to name just the <strong>basic level category</strong>, for example when you see a parrot in the image, 'parrot' will obviously be a correct answer but also correct is 'bird'. However, 'animal' will <strong>not</strong> be counted as a correct response. For the example above, 'rose' would be correct or 'flower', but not 'plant'. When soccer players are depicted, 'soccer', 'football', 'soccer players' will be correct, but not 'humans', 'outdoors', or 'sports'. You do not need to describe the image in full, just name the main object in it <strong>in one or two words</strong>. All images depict objects from one of the following broad level categories: animals, inanimate objects, plants, sports, vehicles, and food. Recognizing means knowing <strong>more</strong> than these broad labels for a given image. But we always encourage you to <strong>make a guess</strong> if you can. Note that you are allowed to use <strong>Dutch and English</strong> in your answers, whatever comes easiest for you.</p><p>Two additional questions will be asked: one question on how <strong>curious</strong> you are about the solution and one on how <strong>confident</strong> you are that you know the solution.</p><p> Next, the solution will be revealed to you. Finally, you'll be asked to indicate how strong your <strong>aha-experience</strong> was after seeing the solution. This describes the positive feeling of the 'click' you sometimes experience, when the pieces of the 'puzzle' fall together and you suddenly have 'insight' in the image.<p>Note that there are no right or wrong answers. We are interested in what <strong>you</strong> see in the image and how <strong>you</strong> feel about it.</p><p>Press any key to start.</p></div>",
+      stimulus: "<div style='word-wrap: break-word; width: 900px'><h3>Instructions</h3><p>This experiment will have 3 parts. In the first part you will see a series of distorted images like the one below on the left. As you can see in the righthand image, the distorted images are derived from actual photographs. In what follows, you will <strong>briefly</strong> be presented with <strong>only</strong> the distorted image.</p> <div style='float: left; margin-right: 20px;'><img src='../img/018tt.jpg' height='250' width='250'></img></div><div style='float: right; margin-left: 20px;'><img src='../img/018gs.jpg' height='250' width='250'></img></div><p>Subsequently you will be asked a few questions about the image: One question on how <strong>curious</strong> you are about the solution and one on how <strong>confident</strong> you are that you know the solution.</p>Next, we ask you to make a guess on what is in the image. Note that it is OK to name just the <strong>basic level category</strong>. For example when you see a parrot in the image, 'parrot' will obviously be a correct answer but also correct is 'bird'. However, 'animal' will <strong>not</strong> be counted as a correct response. For the example above, 'rose' would be correct or 'flower', but not 'plant'. When soccer players are depicted, 'soccer', 'football', 'soccer players' will be correct, but not 'humans', 'outdoors', or 'sports'. You do not need to describe the image in full, just name the main object in it <strong>in one or two words</strong>. All images depict objects from one of the following broad level categories: animals, inanimate objects, plants, sports, vehicles, and food. Recognizing means knowing <strong>more</strong> than these broad labels for a given image. But we always encourage you to <strong>make a guess</strong> if you can. Note that you are allowed to use <strong>Dutch and English</strong> in your answers, whatever comes easiest for you.</p><p>Press any key to continue.</p></div>",
       post_trial_gap: 0,
       data: {
         test_part: 'instructions'
       }
     };
     timeline.push(instructions1);
+
+
+    var instructions2 = {
+      type: "html-keyboard-response",
+      stimulus: "<div style='word-wrap: break-word; width: 900px'><h3>Instructions</h3> <p>Next, the solution image will be revealed to you and you'll be asked to indicate how strong your <strong>aha-experience</strong> was after seeing the solution. This describes the positive feeling of the 'click' you sometimes experience, when the pieces of the 'puzzle' fall together and you suddenly have 'insight' in the image.</p><img src='aha.jpg' height='188' width='250'></img><p>Note that there are no right or wrong answers. We are interested in what <strong>you</strong> see in the image and how <strong>you</strong> feel about it.</p><p>Press any key to start the experiment.</p></div>",
+      post_trial_gap: 0,
+      data: {
+        test_part: 'instructions'
+      }
+    };
+    timeline.push(instructions2);
 
     /* phase 1 */
 
@@ -319,7 +330,7 @@
       },
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true)
-        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (8 + (nb_stim_per_session *
+        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (9 + (nb_stim_per_session *
           4) + (ph1_stimlist.length*7)));
       }
     };
@@ -397,7 +408,7 @@
       },
       on_finish: function (data) {
         data.currentStim = jsPsych.timelineVariable('mooney', true);
-        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (8 + (nb_stim_per_session *
+        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (9 + (nb_stim_per_session *
           4) + (ph1_stimlist.length*7)));
       }
     };
@@ -412,6 +423,16 @@
 
     timeline.push(phase2_procedure);
 
+    // 1-24 5DCR Kashdan et al. 2020
+    // 1-4 Joyous Exploration
+    // 5-8 Deprivation Sensitivity
+    // 9-12 Stress Tolerance (reverse scored)
+    // 13-16 overt social Curiosity
+    // 17-20 covert social curiosity
+    // 21-24 Thrill seeking
+    // 25-34 Perceptual curiosity
+    // 35-49 PNCS
+    // 50-77 AQ-short 
     var qitems = {
       1: "I view challenging situations as an opportunity to grow and learn.",
       2: "I seek out situations where it is likely that I will have to think in depth about something.",
@@ -425,39 +446,71 @@
       10: "I cannot handle the stress that comes from entering uncertain situations.",
       11: "I find it hard to explore new places when I lack confidence in my abilities.",
       12: "It is difficult to concentrate when there is a possibility that I will be taken by surprise.",
-      13: "I like finding out why people behave the way they do.",
-      14: "When other people are having a conversation, I like to find out what it's about.",
-      15: "When around other people, I like listening to their conversations.",
-      16: "When people quarrel, I like to know what's going on.",
-      17: "Risk-taking is exciting to me.",
-      18: "When I have free time, I want to do things that are a little scary.",
-      19: "Creating an adventure as I go is much more appealing than a planned adventure.",
-      20: "I prefer friends who are excitingly unpredictable.",
-      21: "I like exploring my surroundings.",
-      22: "When I smell something new, I try and find out what the odor is coming from.",
-      23: "I like to discover new places to go.",
-      24: "If I hear something rustling in the grass I have to see what it is.",
-      25: "I like visiting art galleries and art museums.",
-      26: "When I see a new fabric, I like to touch and feel it.",
-      27: "I like to listen to new and unusual kinds of music.",
-      28: "When I hear a musical instrument and I am not sure what it is, I like to see it.",
-      29: "I enjoy trying different kinds of ethnic foods.",
-      30: "When I hear a strange sound, I usually try to find out what caused it.",
-      31: "I don’t like situations that are uncertain.",
-      32: "I dislike questions which could be answered in many different ways.",
-      33: "I find that a well ordered life with regular hours suits my temperament.",
-      34: "I feel uncomfortable when I don’t understand the reason why an event occurred in my life.",
-      35: "I feel irritated when one person disagrees with what everyone else in a group believes.",
-      36: "I don’t like to go into a situation without knowing what I can expect from it.",
-      37: "When I have made a decision, I feel relieved.",
-      38: "When I am confronted with a problem, I’m dying to reach a solution very quickly.",
-      39: "I would quickly become impatient and irritated if I would not find a solution to a problem immediately.",
-      40: "I don’t like to be with people who are capable of unexpected actions.",
-      41: "I dislike it when a person’s statement could mean many different things.",
-      42: "I find that establishing a consistent routine enables me to enjoy life more.",
-      43: "I enjoy having a clear and structured mode of life.",
-      44: "I do not usually consult many different opinions before forming my own view.",
-      45: "I dislike unpredictable situations."
+      13: "I ask a lot of questions to figure out what interests other people.",
+      14: "When talking to someone who is excited, I am curious to find out why.",
+      15: "When talking to someone, I try to discover interesting details about them.",
+      16: "I like finding out why people behave the way they do.",
+      17: "When other people are having a conversation, I like to find out what it's about.",
+      18: "When around other people, I like listening to their conversations.",
+      19: "When people quarrel, I like to know what's going on.",
+      20: "I seek out information about the private lives of people in my life.",
+      21: "Risk-taking is exciting to me.",
+      22: "When I have free time, I want to do things that are a little scary.",
+      23: "Creating an adventure as I go is much more appealing than a planned adventure.",
+      24: "I prefer friends who are excitingly unpredictable.",
+      25: "I like exploring my surroundings.",
+      26: "When I smell something new, I try and find out what the odor is coming from.",
+      27: "I like to discover new places to go.",
+      28: "If I hear something rustling in the grass I have to see what it is.",
+      29: "I like visiting art galleries and art museums.",
+      30: "When I see a new fabric, I like to touch and feel it.",
+      31: "I like to listen to new and unusual kinds of music.",
+      32: "When I hear a musical instrument and I am not sure what it is, I like to see it.",
+      33: "I enjoy trying different kinds of ethnic foods.",
+      34: "When I hear a strange sound, I usually try to find out what caused it.",
+      35: "I don’t like situations that are uncertain.",
+      36: "I dislike questions which could be answered in many different ways.",
+      37: "I find that a well ordered life with regular hours suits my temperament.",
+      38: "I feel uncomfortable when I don’t understand the reason why an event occurred in my life.",
+      39: "I feel irritated when one person disagrees with what everyone else in a group believes.",
+      40: "I don’t like to go into a situation without knowing what I can expect from it.",
+      41: "When I have made a decision, I feel relieved.",
+      42: "When I am confronted with a problem, I’m dying to reach a solution very quickly.",
+      43: "I would quickly become impatient and irritated if I would not find a solution to a problem immediately.",
+      44: "I don’t like to be with people who are capable of unexpected actions.",
+      45: "I dislike it when a person’s statement could mean many different things.",
+      46: "I find that establishing a consistent routine enables me to enjoy life more.",
+      47: "I enjoy having a clear and structured mode of life.",
+      48: "I do not usually consult many different opinions before forming my own view.",
+      49: "I dislike unpredictable situations.",
+      50: "I prefer to do things with others rather than on my own.",
+      51: "I find social situations easy.",
+      52: "I would rather go to a library than to a party.",
+      53: "I find myself drawn more strongly to people than to things.",
+      54: "I find it hard to make new friends.",
+      55: "I enjoy social occasions.",
+      56: "I enjoy meeting new people.",
+      57: "New situations make me anxious.",
+      58: "I prefer to do things the same way over and over again.",
+      59: "It does not upset me if my daily routine is disturbed.",
+      60: "I enjoy doing things spontaneously.",
+      61: "I frequently get strongly absorbed in one thing.",
+      62: "I can easily keep track of several different people’s conversations.",
+      63: "I find it easy to do more than one thing at once.",
+      64: "If there is an interruption, I can switch back very quickly.",
+      65: "Trying to imagine something, I find it easy to create a picture in my mind.",
+      66: "Reading a story, I can easily imagine what the characters might look like.",
+      67: "I find making up stories easy.",
+      68: "Reading a story, I find it difficult to work out the character’s intentions.",
+      69: "I find it easy to work out what someone is thinking or feeling.",
+      70: "I find it difficult to imagine what it would be like to be someone else.",
+      71: "I find it difficult to work out people’s intentions.",
+      72: "I find it easy to play games with children that involve pretending.",
+      73: "I usually notice car number plates or similar strings of information.",
+      74: "I am fascinated by dates.",
+      75: "I am fascinated by numbers.",
+      76: "I notice patterns in things all the time.",
+      77: "I like to collect information about categories of things.
     };
 
     items = [];
