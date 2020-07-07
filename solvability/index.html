@@ -27,7 +27,7 @@
   </noscript>
 </body>
 <script>
-  var experiment_name = 'norming'
+  var experiment_name = 'solvability'
   var subject_id = getParameterByName('PROLIFIC_PID');
   // how many stimuli per participant?
   var nb_stim_per_session = 60; // aim for 100?
@@ -434,12 +434,28 @@
         data.ahacond = jsPsych.timelineVariable('condition', true);
         data.currentStim = jsPsych.timelineVariable('mooney', true);
 
-        if (data.key_press == 37) {
-          data.eval = 0;
-        } else {
-          data.eval = 1;
+        var already_responded = jsPsych.data.get().last(1).values()[0].pressed;
+        if (already_responded) {
+          if (jsPsych.data.get().last(1).values()[0].key_press == 37) {
+            data.affect = 0;
+            data.rtfinal = jsPsych.data.get().last(1).values()[0].rt
+          } else {
+            data.affect = 1;
+            data.rtfinal = data.rt+500
 
+          }
+        } else {
+          if (data.key_press == 37) {
+            data.affect = 0;
+            data.rtfinal = data.rt+500
+          } else {
+            data.affect = 1;
+            data.rtfinal = data.rt+500
+
+          }
         }
+
+
       }
     };
 
