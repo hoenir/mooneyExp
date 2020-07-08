@@ -32,7 +32,7 @@
   // how many stimuli per participant?
   var nb_stim_per_session = 60; // aim for 100?
   var stimlist = [];
-  var completionurl = "bye.html";
+  var completionurl = "https://app.prolific.co/submissions/complete?cc=696FF2CB";
   var images = ["../img/018tt.jpg", "../img/018gs.jpg", "aha.jpg"] // the list of images to preload
 
 
@@ -503,13 +503,13 @@
     timeline.push(instructions2);
 
     var phase1_procedure = {
-      timeline: [fixation, mooney1, solvability, mooney2, reveal, mooney3, target, affect],
+      timeline: [fixation, mooney1, solvability, mooney2, reveal, mooney3, isi, target, affect],
       timeline_variables: stimlist,
       repetitions: 1,
       randomize_order: true
     };
 
-    //timeline.push(phase1_procedure);
+    timeline.push(phase1_procedure);
 
 
     /* define debrief */
