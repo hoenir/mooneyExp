@@ -30,7 +30,7 @@
   var experiment_name = 'solvability'
   var subject_id = getParameterByName('PROLIFIC_PID');
   // how many stimuli per participant?
-  var nb_stim_per_session = 60; // aim for 100?
+  var nb_stim_per_session = 60; 
   var stimlist = [];
   var completionurl = "https://app.prolific.co/submissions/complete?cc=696FF2CB";
   var images = ["../img/018tt.jpg", "../img/018gs.jpg", "aha.jpg"] // the list of images to preload
@@ -461,7 +461,7 @@
 
           }
         }
-        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (6 + (nb_stim_per_session+4 *  9) ));
+        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (6 + ((stimlist.length + 4) *  9) ));
 
 
       }
