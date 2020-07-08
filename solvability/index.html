@@ -336,6 +336,13 @@
       on_finish: function (data) {
         data.ahacond = jsPsych.timelineVariable('condition', true);
         data.currentStim = jsPsych.timelineVariable('mooney', true);
+        if (data.key_press == 78) {
+            data.solvability = 0;
+            
+          } else {
+            data.solvability = 1;
+
+          }
       }
     };
 
