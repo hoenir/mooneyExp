@@ -461,6 +461,7 @@
 
           }
         }
+        jsPsych.setProgressBar(jsPsych.data.get().last(1).select('trial_index').mean() / (6 + (nb_stim_per_session+4 *  9) ));
 
 
       }
