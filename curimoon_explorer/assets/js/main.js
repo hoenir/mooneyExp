@@ -132,12 +132,11 @@ function tipMouseover (d) {
 
         // Format image paths
         tt_path = d.currentStim;
-        tt_path = tt_path.substring(1, tt_path.length);
         tt_path_quoted = '"' + tt_path + '"';
 
-        gs_path = baseName(d.currentStim)
+        gs_path = baseName(d.currentStim);
         gs_path = gs_path.substring(0, gs_path.length - 2);
-        gs_path = "./img/gs/" + gs_path + "gs.jpg";
+        gs_path = "../img/gs/" + gs_path + "gs.jpg";
         gs_path_quoted = '"' + gs_path + '"';
 
         // Format data to show in tooltip
