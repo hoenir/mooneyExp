@@ -1,6 +1,7 @@
 /* GLOBAL */
 
 // Constant settings
+const DATA_FILE = "../data/dfperim.csv"
 const TO_ROTATE = ["anisotropyGrayscale", "anisotropyMooney"]; // x-axis tick labels will be rotated
 const REGRESSION_OPTS = ["none", "linear", "quadratic", "exponential", "logarithmic", "power"];
 const MARGIN = {top: 20, right: 30, bottom: 60, left: 60}, // dimensions and margins of the graph
@@ -605,7 +606,7 @@ $(document).ready(function () {
         .call(zoom);
 
     //Read the data
-    d3.csv("dfperim.csv", function (result) {
+    d3.csv(DATA_FILE, function (result) {
         data = result;
         variables = getNumericVars(data.columns.slice(1));
         makeDropDown("x-menu", variables, xVar, updateX);
