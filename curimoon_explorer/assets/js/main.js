@@ -618,6 +618,12 @@ $(document).ready(function () {
     d3.csv(DATA_FILE, function (result) {
         data = result;
         variables = getNumericVars(data.columns.slice(1));
+        variables.sort(function (a,b){
+            // Case insensitive sort
+            // https://stackoverflow.com/questions/8996963/how-to-perform-case-insensitive-sorting-in-javascript
+            // Ivan Krechetov's solution
+            return a.toLowerCase().localeCompare(b.toLowerCase());
+        }); 
         makeDropDown("x-menu", variables, xVar, updateX);
         makeDropDown("y-menu", variables, yVar, updateY);
 
