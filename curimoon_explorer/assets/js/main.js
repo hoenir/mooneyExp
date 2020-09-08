@@ -20,8 +20,8 @@ var tooltip;
 var regressionTooltip;
 
 // Initialize (will be updated based on user input)
-var xVar = "memorability_wo_fa_correction";
-var yVar = "memorability_w_fa_correction";
+var xVar = "curiosity";
+var yVar = "aha";
 var regressionOpt = "none";
 
 // To keep track of which state we're in
