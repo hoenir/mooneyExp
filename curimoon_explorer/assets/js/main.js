@@ -26,7 +26,8 @@ var regressionOpt = "none";
 
 // To keep track of which state we're in
 var state = {
-    fixedTooltip: false // whether tooltip is fixed (i.e., doesn't disappear on mouseout)
+    fixedTooltip: false, // whether tooltip is fixed (i.e., doesn't disappear on mouseout)
+    showTooltip: false // whether tooltip should be visible
 }
 
 // Set up the scales
@@ -129,6 +130,9 @@ function tipMouseover (d) {
         var gs_image = new Image()
         var pageX  = d3.event.pageX;
         var pageY = d3.event.pageY;
+        
+        // Update state.showTooltip
+        state.showTooltip = true; 
 
         // Format image paths
         tt_path = d.currentStim;
@@ -176,6 +180,11 @@ function tipMouseover (d) {
 
         // Function to call once gs_image is loaded
         gs_image.onload = function(){
+            // To handle a scenario in which tipMouseout is triggered before images have been loaded
+            if (!state.showTooltip){
+                // Don't show tooltip if state has changed in the meantime
+                return
+            }
             // Position and display tooltip
             if (pageY > (window.innerHeight/2)){
                 tooltip.style("left", (pageX + 10) + "px")
@@ -221,6 +230,7 @@ function tipMouseout (d) {
 
 function closeTooltip() {
     state.fixedTooltip = false;
+    state.showTooltip = false;
     d3.selectAll("circle").attr("r", 2).classed("selected", false);
     tooltip.transition()
         .duration(300) // ms
