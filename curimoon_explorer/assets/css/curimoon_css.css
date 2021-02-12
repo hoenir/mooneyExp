@@ -1,0 +1,120 @@
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+}
+
+.label {
+  font-size: 100%;
+}
+
+.tick text {
+	font-size: 75%;
+}
+
+.authors {
+    font-size:80%;
+    font-style: italic;
+}
+
+.tooltip {
+	position: absolute;
+	font-size: 12px;
+	width:  300px;
+	height: auto;
+	background-color: white;
+    border: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 10px
+}
+
+.regression-tooltip {
+	position: absolute;
+	font-size: 12px;
+	width:  auto;
+	height: auto;
+	background-color: lightgray;
+    border: none;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 10px
+}
+
+.tooltip img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  padding: 10px
+}
+
+.tooltip .tooltip_text {
+	width: 100%;
+	text-align: center;
+}
+
+.tooltip .tooltip_icons {
+	width: 100%;
+	text-align: right;
+}
+
+.image_container {
+  position: relative;
+  width: 50%;
+  display: inline-block;
+}
+
+.solution_mask {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  top: 10px;
+  bottom: 10px;
+  left:10px;
+  background-color: black;
+  color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  justify-content: middle;
+  align-items: center;
+}
+
+.solution_mask p {
+	text-align:center;
+	margin: 0px;
+}
+
+.gui-bar.btn-group {
+    width: 100%;
+}
+
+.gui-bar.btn {
+    width: 100%;
+    max-width: 210px;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+
+.gui-bar.row{
+    margin-bottom: 5px;
+}
+
+.gui-bar.label{
+    min-width: 200px;
+}
+
+circle.selected{
+    fill: #fb672c;
+}
+
+circle {
+    fill: #158daf;
+}
+
+.regression-line {
+    fill: none;
+    stroke: lightgrey;
+    stroke-width: 1.5;
+}
+
